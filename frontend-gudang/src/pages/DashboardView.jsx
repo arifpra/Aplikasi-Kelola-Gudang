@@ -5,7 +5,7 @@ import {
 // Kita panggil kartu yang sudah kita buat tadi
 import StatCard from '../components/StatCard.jsx';
 
-const DashboardView = ({ products, transactions, loading }) => {
+const DashboardView = ({ products }) => {
   const chartData = [
     { name: 'Sen', masuk: 40, keluar: 24 },
     { name: 'Sel', masuk: 30, keluar: 13 },

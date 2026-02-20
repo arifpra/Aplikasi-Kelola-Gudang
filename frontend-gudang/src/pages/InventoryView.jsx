@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { Download, Plus, Search, Filter, Edit, Trash2, Package, X } from 'lucide-react';
-
-const API_URL = 'http://localhost:3000';
+import { createProduct, deleteProductById } from '../features/products/products.api';
 
 const InventoryView = ({ products, refreshData }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -17,21 +15,25 @@ const InventoryView = ({ products, refreshData }) => {
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_URL}/products`, formData);
+      await createProduct(formData);
       setModalOpen(false);
       setFormData({ sku: '', name: '', category: '', stock: 0 });
-      refreshData();
+      await refreshData();
     } catch (err) {
-      alert("Gagal simpan");
+      console.error("Gagal simpan produk:", err);
+      alert(err.message || "Gagal simpan");
     }
   };
 
   const handleDelete = async (id) => {
     if(confirm('Hapus produk ini?')) {
       try {
-        await axios.delete(`${API_URL}/products/${id}`);
-        refreshData();
-      } catch (err) { alert('Gagal hapus'); }
+        await deleteProductById(id);
+        await refreshData();
+      } catch (err) {
+        console.error("Gagal hapus produk:", err);
+        alert(err.message || 'Gagal hapus');
+      }
     }
   };
 

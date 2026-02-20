@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import { HelpCircle } from 'lucide-react';
 
 // Import komponen yang sudah kamu pisah
@@ -8,37 +7,13 @@ import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import DashboardView from './pages/DashboardView';
 import InventoryView from './pages/InventoryView';
-
-const API_URL = 'http://localhost:3000';
+import useProducts from './features/products/useProducts';
 
 export default function App() {
   // State untuk navigasi dan data
   const [activePage, setActivePage] = useState('dashboard');
   const [isSidebarOpen, setSidebarOpen] = useState(true);
-  const [products, setProducts] = useState([]);
-  const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  // Fungsi untuk mengambil data dari Backend saat aplikasi dibuka
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const [resProd, resTrans] = await Promise.all([
-        axios.get(`${API_URL}/products`),
-        axios.get(`${API_URL}/transactions`)
-      ]);
-      setProducts(resProd.data);
-      setTransactions(resTrans.data);
-    } catch (error) {
-      console.error("Gagal ambil data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const { products, loading, error, refreshProducts } = useProducts();
 
   return (
     <div className="flex h-screen bg-[#F8FAFC] font-sans text-slate-800 overflow-hidden">
@@ -56,18 +31,27 @@ export default function App() {
         
         {/* Area Isi Halaman yang berubah-ubah */}
         <main className="flex-1 overflow-y-auto p-6 md:p-10">
+          {loading && (
+            <div className="mb-4 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500">
+              Memuat data produk...
+            </div>
+          )}
+          {error && (
+            <div className="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
+              {error}
+            </div>
+          )}
+
           {activePage === 'dashboard' && (
             <DashboardView 
-              products={products} 
-              transactions={transactions} 
-              loading={loading}
+              products={products}
             />
           )}
           
           {activePage === 'inventory' && (
             <InventoryView 
               products={products} 
-              refreshData={fetchData} 
+              refreshData={refreshProducts} 
             />
           )}
           
