@@ -1,8 +1,8 @@
-const express = require('express');
+﻿const express = require('express');
 const cors = require('cors');
 const env = require('./config/env');
-const productsRoutes = require('./modules/products/products.routes');
-const transactionsRoutes = require('./modules/transactions/transactions.routes');
+const authRoutes = require('./modules/iam/auth.routes');
+const iamRoutes = require('./modules/iam/iam.routes');
 const notFound = require('./middlewares/notFound');
 const errorHandler = require('./middlewares/errorHandler');
 
@@ -19,12 +19,8 @@ app.get('/health', (_req, res) => {
   });
 });
 
-app.use('/api/v1/products', productsRoutes);
-app.use('/api/v1/transactions', transactionsRoutes);
-
-// Backward compatibility sementara untuk frontend lama.
-app.use('/products', productsRoutes);
-app.use('/transactions', transactionsRoutes);
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/iam', iamRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
