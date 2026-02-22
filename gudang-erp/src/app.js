@@ -3,6 +3,7 @@ const cors = require('cors');
 const env = require('./config/env');
 const authRoutes = require('./modules/iam/auth.routes');
 const iamRoutes = require('./modules/iam/iam.routes');
+const auditRoutes = require('./modules/audit/audit.routes');
 const notFound = require('./middlewares/notFound');
 const errorHandler = require('./middlewares/errorHandler');
 
@@ -21,6 +22,7 @@ app.get('/health', (_req, res) => {
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/iam', iamRoutes);
+app.use('/api/v1/audit', auditRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

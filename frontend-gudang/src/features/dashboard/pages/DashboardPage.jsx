@@ -10,6 +10,7 @@
 import { ClipboardList } from 'lucide-react';
 import { useAuth } from '../../../app/auth/authStore';
 import RequirePerm from '../../../app/rbac/RequirePerm';
+import { PERMS } from '../../../shared/constants/permissions';
 import Badge from '../../../shared/ui/Badge';
 import Button from '../../../shared/ui/Button';
 import { Card, CardBody, CardHeader } from '../../../shared/ui/Card';
@@ -97,10 +98,10 @@ export default function DashboardPage() {
             </h3>
           </CardHeader>
           <CardBody className="space-y-3">
-            <RequirePerm code="QC_DECIDE" fallback={<p style={{ color: colors.muted }}>No access</p>}>
+            <RequirePerm code={PERMS.QC_DECIDE} fallback={<p style={{ color: colors.muted }}>No access</p>}>
               <Button className="w-full">Review QC Queue</Button>
             </RequirePerm>
-            <RequirePerm code="MASTERDATA_WRITE" fallback={<p style={{ color: colors.muted }}>No access</p>}>
+            <RequirePerm code={PERMS.MASTERDATA_WRITE} fallback={<p style={{ color: colors.muted }}>No access</p>}>
               <Button variant="secondary" className="w-full">
                 Update Master Data
               </Button>

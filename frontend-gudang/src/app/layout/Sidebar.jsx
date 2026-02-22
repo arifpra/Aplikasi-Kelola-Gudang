@@ -1,29 +1,45 @@
 ﻿import { ChevronDown } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/authStore';
 import { colors, radius, spacing } from '../../shared/theme/tokens';
 import { NAV } from './navConfig';
 
+function isExplicitPublic(requiredPerm) {
+  return requiredPerm === null;
+}
+
 function hasPerm(item, permissions) {
-  if (!item.requiredPerm) return true;
+  if (isExplicitPublic(item.requiredPerm)) {
+    return true;
+  }
+
+  if (typeof item.requiredPerm === 'undefined') {
+    if (import.meta.env.DEV) {
+      console.warn(`[RBAC] requiredPerm is undefined for nav item: ${item.key} (${item.label})`);
+    }
+    return false;
+  }
+
+  if (typeof item.requiredPerm !== 'string' || item.requiredPerm.trim() === '') {
+    return false;
+  }
+
   return permissions.includes(item.requiredPerm);
 }
 
 function filterNav(items, permissions) {
   return items
     .map((item) => {
-      const children = item.children ? filterNav(item.children, permissions) : undefined;
+      const parentAllowed = hasPerm(item, permissions);
+      if (!parentAllowed) return null;
 
-      if (children?.length) {
-        return { ...item, children };
-      }
+      if (!item.children?.length) return item;
 
-      if (item.children?.length && !children?.length) {
-        return null;
-      }
+      const visibleChildren = item.children.filter((child) => hasPerm(child, permissions));
+      if (!visibleChildren.length) return null;
 
-      return hasPerm(item, permissions) ? item : null;
+      return { ...item, children: visibleChildren };
     })
     .filter(Boolean);
 }
@@ -35,31 +51,30 @@ function isPathActive(pathname, targetPath) {
 export default function Sidebar() {
   const { permissions } = useAuth();
   const location = useLocation();
-
   const navItems = useMemo(() => filterNav(NAV, permissions), [permissions]);
 
-  const [openMap, setOpenMap] = useState(() => {
-    const initial = {};
-    for (const item of NAV) {
-      if (item.children?.length) {
-        initial[item.key] = isPathActive(location.pathname, item.path);
-      }
-    }
-    return initial;
-  });
+  const [openMap, setOpenMap] = useState({});
+
+  useEffect(() => {
+    setOpenMap((prev) => {
+      const next = { ...prev };
+      navItems.forEach((item) => {
+        if (item.children?.length && isPathActive(location.pathname, item.path)) {
+          next[item.key] = true;
+        }
+      });
+      return next;
+    });
+  }, [location.pathname, navItems]);
 
   const toggleGroup = (key) => {
-    setOpenMap((previous) => ({ ...previous, [key]: !previous[key] }));
+    setOpenMap((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   return (
     <aside
       className="w-72 shrink-0"
-      style={{
-        backgroundColor: colors.sidebar,
-        borderRadius: radius.lg,
-        padding: spacing.md,
-      }}
+      style={{ backgroundColor: colors.sidebar, borderRadius: radius.lg, padding: spacing.md }}
     >
       <div className="mb-6">
         <p className="text-xs font-semibold uppercase tracking-wider text-slate-300">Warehouse Suite</p>
@@ -84,7 +99,7 @@ export default function Sidebar() {
                   borderRadius: radius.lg,
                 })}
               >
-                <Icon size={16} />
+                {Icon ? <Icon size={16} /> : null}
                 {item.label}
               </NavLink>
             );
@@ -105,7 +120,7 @@ export default function Sidebar() {
                 }}
               >
                 <span className="flex items-center gap-3">
-                  <Icon size={16} />
+                  {Icon ? <Icon size={16} /> : null}
                   {item.label}
                 </span>
                 <ChevronDown size={14} style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: '0.2s' }} />
@@ -126,7 +141,7 @@ export default function Sidebar() {
                           borderRadius: radius.lg,
                         })}
                       >
-                        <ChildIcon size={14} />
+                        {ChildIcon ? <ChildIcon size={14} /> : null}
                         {child.label}
                       </NavLink>
                     );

@@ -1,12 +1,12 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
 import { colors, radius, shadow } from '../theme/tokens';
-import { subscribeToast } from './toastEvents';
+import { subscribeToast } from './toastStore';
 
 const toneMap = {
   info: { backgroundColor: '#EFF6FF', color: colors.info },
   success: { backgroundColor: '#ECFDF3', color: colors.success },
   warning: { backgroundColor: '#FFF7ED', color: colors.warning },
-  danger: { backgroundColor: '#FEF2F2', color: colors.danger },
+  error: { backgroundColor: '#FEF2F2', color: colors.danger },
 };
 
 export default function Toast() {
@@ -14,7 +14,7 @@ export default function Toast() {
 
   useEffect(() => {
     return subscribeToast((toast) => {
-      setItems((prev) => [...prev, toast]);
+      setItems((prev) => [...prev, { id: Date.now(), ...toast }]);
     });
   }, []);
 
@@ -49,4 +49,3 @@ export default function Toast() {
     </div>
   );
 }
-

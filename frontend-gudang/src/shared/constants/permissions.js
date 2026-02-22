@@ -1,7 +1,3 @@
-﻿export const PERMISSIONS = {
-  MASTERDATA_READ: 'MASTERDATA_READ',
-  MASTERDATA_WRITE: 'MASTERDATA_WRITE',
-  GRN_READ: 'GRN_READ',
-  GRN_WRITE: 'GRN_WRITE',
-  STOCK_READ: 'STOCK_READ',
-};
+﻿import sharedPerms from '../../../../shared/permissions.json';
+
+export const PERMS = sharedPerms;

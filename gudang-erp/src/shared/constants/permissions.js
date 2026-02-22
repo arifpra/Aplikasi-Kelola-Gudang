@@ -1,9 +1,1 @@
-﻿module.exports = {
-  MASTERDATA_READ: 'MASTERDATA_READ',
-  MASTERDATA_WRITE: 'MASTERDATA_WRITE',
-  GRN_READ: 'GRN_READ',
-  GRN_WRITE: 'GRN_WRITE',
-  GRN_POST: 'GRN_POST',
-  QC_DECIDE: 'QC_DECIDE',
-  STOCK_READ: 'STOCK_READ',
-};
+﻿module.exports = require('../../../../shared/permissions.json');

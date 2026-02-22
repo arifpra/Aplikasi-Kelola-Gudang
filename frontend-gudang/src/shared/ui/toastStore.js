@@ -1,13 +1,9 @@
 ﻿const TOAST_EVENT = 'app:toast';
 
-export function showToast(message, type = 'info') {
+export function showToast(payload) {
   window.dispatchEvent(
     new CustomEvent(TOAST_EVENT, {
-      detail: {
-        id: Date.now(),
-        message,
-        type,
-      },
+      detail: payload,
     }),
   );
 }

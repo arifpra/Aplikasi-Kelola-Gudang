@@ -1,4 +1,4 @@
-﻿import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+﻿import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../lib/api/client';
 import { clearAccessToken, getAccessToken, setAccessToken } from './token';
@@ -21,6 +21,7 @@ export function AuthProvider({ children }) {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const didLogBootstrapPermsRef = useRef(false);
 
   const bootstrap = useCallback(async () => {
     const token = getAccessToken();
@@ -31,7 +32,13 @@ export function AuthProvider({ children }) {
 
     try {
       const response = await apiClient.get('/auth/me');
-      setUser(mapUser(response.data?.data?.user));
+      const mapped = mapUser(response.data?.data?.user);
+      setUser(mapped);
+
+      if (import.meta.env.DEV && !didLogBootstrapPermsRef.current && mapped) {
+        console.info('[RBAC] /auth/me permissions:', mapped.permissions);
+        didLogBootstrapPermsRef.current = true;
+      }
     } catch (_error) {
       clearAccessToken();
       setUser(null);

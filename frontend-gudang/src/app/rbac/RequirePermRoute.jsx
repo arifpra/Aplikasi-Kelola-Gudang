@@ -1,7 +1,7 @@
 ﻿import { useEffect, useRef } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/authStore';
-import { showToast } from '../../shared/ui/toastEvents';
+import { showToast } from '../../shared/ui/toastStore';
 
 export default function RequirePermRoute({ code, children }) {
   const { loading, isAuthenticated, permissions } = useAuth();
@@ -12,14 +12,12 @@ export default function RequirePermRoute({ code, children }) {
   useEffect(() => {
     const key = `${location.pathname}:${code || ''}`;
     if (!loading && isAuthenticated && !isAllowed && notifiedRef.current !== key) {
-      showToast('Kamu tidak punya akses ke halaman tersebut.', 'warning');
+      showToast({ type: 'error', message: 'Anda tidak memiliki akses.' });
       notifiedRef.current = key;
     }
   }, [loading, isAuthenticated, isAllowed, location.pathname, code]);
 
-  if (loading) {
-    return children;
-  }
+  if (loading) return children;
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />;
@@ -31,4 +29,3 @@ export default function RequirePermRoute({ code, children }) {
 
   return children;
 }
-

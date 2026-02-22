@@ -2,18 +2,35 @@
 const jwt = require('jsonwebtoken');
 const env = require('../../config/env');
 const ApiError = require('../../shared/utils/apiError');
-const { logAudit } = require('../../shared/audit/audit.service');
+const { auditLog } = require('../../shared/audit/audit.service');
 const authRepo = require('./auth.repo');
 
-async function login({ email, password, ip, userAgent }) {
-  const user = await authRepo.findUserByEmail(email);
+async function login({ email, password, req }) {
+  const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
+  const user = await authRepo.findUserByEmail(normalizedEmail);
 
   if (!user || !user.is_active) {
+    await auditLog({
+      actorUser: null,
+      action: 'AUTH_LOGIN_FAILED',
+      entityType: 'USER',
+      entityId: null,
+      meta: { email: normalizedEmail },
+      req,
+    });
     throw new ApiError(401, 'Invalid email or password');
   }
 
   const isMatch = await bcrypt.compare(password, user.password_hash);
   if (!isMatch) {
+    await auditLog({
+      actorUser: { id: user.id, email: user.email },
+      action: 'AUTH_LOGIN_FAILED',
+      entityType: 'USER',
+      entityId: user.id,
+      meta: { email: normalizedEmail },
+      req,
+    });
     throw new ApiError(401, 'Invalid email or password');
   }
 
@@ -31,15 +48,13 @@ async function login({ email, password, ip, userAgent }) {
     { expiresIn: env.jwtExpiresIn },
   );
 
-  await logAudit({
-    actorUserId: userWithAccess.id,
-    action: 'AUTH_LOGIN',
+  await auditLog({
+    actorUser: { id: userWithAccess.id, email: userWithAccess.email },
+    action: 'AUTH_LOGIN_SUCCESS',
     entityType: 'USER',
     entityId: userWithAccess.id,
-    meta: {
-      ip,
-      userAgent,
-    },
+    meta: null,
+    req,
   });
 
   return {

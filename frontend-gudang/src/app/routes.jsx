@@ -7,7 +7,7 @@ import LoginPage from '../features/auth/pages/LoginPage';
 import { colors } from '../shared/theme/tokens';
 import PlaceholderPage from '../features/common/pages/PlaceholderPage';
 import RequirePermRoute from './rbac/RequirePermRoute';
-import { PERMISSIONS } from '../shared/constants/permissions';
+import { PERMS } from '../shared/constants/permissions';
 
 function RootRedirect() {
   const { loading, isAuthenticated } = useAuth();
@@ -48,41 +48,35 @@ export default function AppRoutes() {
 
             <Route
               path="/master-data/products"
-              element={withPerm(PERMISSIONS.MASTERDATA_READ, <PlaceholderPage title="Products" description="Master data products" />)}
+              element={withPerm(PERMS.MASTERDATA_READ, <PlaceholderPage title="Products" description="Master Data / Products" actionLabel="Create Product" />)}
             />
             <Route
               path="/master-data/uom"
-              element={withPerm(PERMISSIONS.MASTERDATA_READ, <PlaceholderPage title="UOM" description="Unit of measure catalog" />)}
-            />
-            <Route
-              path="/master-data/warehouses"
-              element={withPerm(PERMISSIONS.MASTERDATA_READ, <PlaceholderPage title="Warehouses" description="Warehouse master" />)}
-            />
-            <Route
-              path="/master-data/locations"
-              element={withPerm(PERMISSIONS.MASTERDATA_READ, <PlaceholderPage title="Locations" description="Location master" />)}
+              element={withPerm(PERMS.MASTERDATA_READ, <PlaceholderPage title="UOM" description="Master Data / UOM" actionLabel="Create UOM" />)}
             />
             <Route
               path="/master-data/partners"
-              element={withPerm(PERMISSIONS.MASTERDATA_READ, <PlaceholderPage title="Partners" description="Partner master" />)}
+              element={withPerm(PERMS.MASTERDATA_READ, <PlaceholderPage title="Partners" description="Master Data / Partners" actionLabel="Create Partner" />)}
             />
 
             <Route
-              path="/purchasing/grn"
-              element={withPerm(PERMISSIONS.GRN_READ, <PlaceholderPage title="GRN Inbox" description="Purchasing read queue" />)}
+              path="/warehouse-setup/warehouses"
+              element={withPerm(PERMS.WAREHOUSE_SETUP_READ, <PlaceholderPage title="Warehouses" description="Warehouse Setup / Warehouses" actionLabel="Create Warehouse" />)}
             />
             <Route
-              path="/purchasing/grn-drafts"
-              element={withPerm(PERMISSIONS.GRN_WRITE, <PlaceholderPage title="GRN Drafts" description="Purchasing write queue" />)}
+              path="/warehouse-setup/locations"
+              element={withPerm(PERMS.WAREHOUSE_SETUP_READ, <PlaceholderPage title="Locations" description="Warehouse Setup / Locations" actionLabel="Create Location" />)}
             />
-
             <Route
-              path="/inventory/stock-overview"
-              element={withPerm(PERMISSIONS.STOCK_READ, <PlaceholderPage title="Stock Overview" description="Inventory stock visibility" />)}
+              path="/warehouse-setup/zones"
+              element={withPerm(PERMS.WAREHOUSE_SETUP_READ, <PlaceholderPage title="Zones" description="Warehouse Setup / Zones" actionLabel="Create Zone" />)}
             />
 
-            <Route path="/manufacturing" element={<PlaceholderPage title="Manufacturing" description="Manufacturing workspace placeholder" />} />
-            <Route path="/compliance" element={<PlaceholderPage title="Compliance" description="Compliance workspace placeholder" />} />
+            <Route path="/purchasing" element={withPerm(PERMS.PURCHASING_READ, <PlaceholderPage title="Purchasing" description="Purchasing module placeholder" actionLabel="Create PO" />)} />
+            <Route path="/inventory" element={withPerm(PERMS.INVENTORY_READ, <PlaceholderPage title="Inventory" description="Inventory module placeholder" actionLabel="Create Movement" />)} />
+            <Route path="/manufacturing" element={withPerm(PERMS.MANUFACTURING_READ, <PlaceholderPage title="Manufacturing" description="Manufacturing module placeholder" actionLabel="Create Work Order" />)} />
+            <Route path="/compliance" element={withPerm(PERMS.COMPLIANCE_READ, <PlaceholderPage title="Compliance" description="Compliance module placeholder" actionLabel="Create Recall" />)} />
+            <Route path="/settings" element={<PlaceholderPage title="Settings" description="Application settings placeholder" actionLabel="Save Settings" />} />
 
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Route>

@@ -6,8 +6,7 @@ const login = asyncHandler(async (req, res) => {
   const data = await authService.login({
     email: req.body.email,
     password: req.body.password,
-    ip: req.ip,
-    userAgent: req.headers['user-agent'] || '',
+    req,
   });
 
   return sendSuccess(res, data, 200, 'Login success');
