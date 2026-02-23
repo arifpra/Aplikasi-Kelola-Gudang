@@ -8,6 +8,9 @@ import { colors } from '../shared/theme/tokens';
 import PlaceholderPage from '../features/common/pages/PlaceholderPage';
 import RequirePermRoute from './rbac/RequirePermRoute';
 import { PERMS } from '../shared/constants/permissions';
+import WarehousesPage from '../features/warehouse-setup/pages/WarehousesPage';
+import LocationsPage from '../features/warehouse-setup/pages/LocationsPage';
+import ZonesPage from '../features/warehouse-setup/pages/ZonesPage';
 
 function RootRedirect() {
   const { loading, isAuthenticated } = useAuth();
@@ -61,15 +64,15 @@ export default function AppRoutes() {
 
             <Route
               path="/warehouse-setup/warehouses"
-              element={withPerm(PERMS.WAREHOUSE_SETUP_READ, <PlaceholderPage title="Warehouses" description="Warehouse Setup / Warehouses" actionLabel="Create Warehouse" />)}
+              element={withPerm(PERMS.WAREHOUSE_SETUP_READ, <WarehousesPage />)}
             />
             <Route
               path="/warehouse-setup/locations"
-              element={withPerm(PERMS.WAREHOUSE_SETUP_READ, <PlaceholderPage title="Locations" description="Warehouse Setup / Locations" actionLabel="Create Location" />)}
+              element={withPerm(PERMS.WAREHOUSE_SETUP_READ, <LocationsPage />)}
             />
             <Route
               path="/warehouse-setup/zones"
-              element={withPerm(PERMS.WAREHOUSE_SETUP_READ, <PlaceholderPage title="Zones" description="Warehouse Setup / Zones" actionLabel="Create Zone" />)}
+              element={withPerm(PERMS.WAREHOUSE_SETUP_READ, <ZonesPage />)}
             />
 
             <Route path="/purchasing" element={withPerm(PERMS.PURCHASING_READ, <PlaceholderPage title="Purchasing" description="Purchasing module placeholder" actionLabel="Create PO" />)} />
